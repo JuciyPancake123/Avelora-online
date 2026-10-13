@@ -1,0 +1,1106 @@
+{
+  "TYPE_CHART": {
+    "normal": {
+      "rock": 0.5,
+      "ghost": 0,
+      "steel": 0.5
+    },
+    "fire": {
+      "fire": 0.5,
+      "water": 0.5,
+      "grass": 2,
+      "ice": 2,
+      "bug": 2,
+      "rock": 0.5,
+      "dragon": 0.5,
+      "steel": 2
+    },
+    "water": {
+      "fire": 2,
+      "water": 0.5,
+      "grass": 0.5,
+      "ground": 2,
+      "rock": 2,
+      "dragon": 0.5
+    },
+    "electric": {
+      "water": 2,
+      "electric": 0.5,
+      "grass": 0.5,
+      "ground": 0,
+      "flying": 2,
+      "dragon": 0.5
+    },
+    "grass": {
+      "fire": 0.5,
+      "water": 2,
+      "grass": 0.5,
+      "poison": 0.5,
+      "ground": 2,
+      "flying": 0.5,
+      "bug": 0.5,
+      "rock": 2,
+      "dragon": 0.5,
+      "steel": 0.5
+    },
+    "ice": {
+      "fire": 0.5,
+      "water": 0.5,
+      "grass": 2,
+      "ice": 0.5,
+      "ground": 2,
+      "flying": 2,
+      "dragon": 2,
+      "steel": 0.5
+    },
+    "fighting": {
+      "normal": 2,
+      "ice": 2,
+      "poison": 0.5,
+      "flying": 0.5,
+      "psychic": 0.5,
+      "bug": 0.5,
+      "rock": 2,
+      "ghost": 0,
+      "dark": 2,
+      "steel": 2,
+      "fairy": 0.5
+    },
+    "poison": {
+      "grass": 2,
+      "poison": 0.5,
+      "ground": 0.5,
+      "rock": 0.5,
+      "ghost": 0.5,
+      "steel": 0,
+      "fairy": 2
+    },
+    "ground": {
+      "fire": 2,
+      "electric": 2,
+      "grass": 0.5,
+      "poison": 2,
+      "flying": 0,
+      "bug": 0.5,
+      "rock": 2,
+      "steel": 2
+    },
+    "flying": {
+      "electric": 0.5,
+      "grass": 2,
+      "fighting": 2,
+      "bug": 2,
+      "rock": 0.5,
+      "steel": 0.5
+    },
+    "psychic": {
+      "fighting": 2,
+      "poison": 2,
+      "psychic": 0.5,
+      "dark": 0,
+      "steel": 0.5
+    },
+    "bug": {
+      "fire": 0.5,
+      "grass": 2,
+      "fighting": 0.5,
+      "poison": 0.5,
+      "flying": 0.5,
+      "psychic": 2,
+      "ghost": 0.5,
+      "dark": 2,
+      "steel": 0.5,
+      "fairy": 0.5
+    },
+    "rock": {
+      "fire": 2,
+      "ice": 2,
+      "fighting": 0.5,
+      "ground": 0.5,
+      "flying": 2,
+      "bug": 2,
+      "steel": 0.5
+    },
+    "ghost": {
+      "normal": 0,
+      "psychic": 2,
+      "ghost": 2,
+      "dark": 0.5
+    },
+    "dragon": {
+      "dragon": 2,
+      "steel": 0.5,
+      "fairy": 0
+    },
+    "dark": {
+      "fighting": 0.5,
+      "psychic": 2,
+      "ghost": 2,
+      "dark": 0.5,
+      "fairy": 0.5
+    },
+    "steel": {
+      "fire": 0.5,
+      "water": 0.5,
+      "electric": 0.5,
+      "ice": 2,
+      "rock": 2,
+      "steel": 0.5,
+      "fairy": 2
+    },
+    "fairy": {
+      "fire": 0.5,
+      "fighting": 2,
+      "poison": 0.5,
+      "dragon": 2,
+      "dark": 2,
+      "steel": 0.5
+    }
+  },
+  "OFFLINE": {
+    "bulbasaur": {
+      "id": 1,
+      "stats": [
+        45,
+        49,
+        49,
+        65,
+        65,
+        45
+      ],
+      "types": [
+        "grass",
+        "poison"
+      ],
+      "abilities": [
+        "overgrow",
+        "chlorophyll"
+      ],
+      "moves": [
+        "tackle",
+        "growl",
+        "vine-whip",
+        "leech-seed",
+        "razor-leaf",
+        "sleep-powder",
+        "solar-beam"
+      ],
+      "evolve": [
+        "ivysaur"
+      ]
+    },
+    "charmander": {
+      "id": 4,
+      "stats": [
+        39,
+        52,
+        43,
+        60,
+        50,
+        65
+      ],
+      "types": [
+        "fire"
+      ],
+      "abilities": [
+        "blaze",
+        "solar-power"
+      ],
+      "moves": [
+        "scratch",
+        "growl",
+        "ember",
+        "smokescreen",
+        "fire-fang",
+        "flamethrower"
+      ],
+      "evolve": [
+        "charmeleon"
+      ]
+    },
+    "squirtle": {
+      "id": 7,
+      "stats": [
+        44,
+        48,
+        65,
+        50,
+        64,
+        43
+      ],
+      "types": [
+        "water"
+      ],
+      "abilities": [
+        "torrent",
+        "rain-dish"
+      ],
+      "moves": [
+        "tackle",
+        "tail-whip",
+        "water-gun",
+        "rapid-spin",
+        "bubble-beam",
+        "water-pulse"
+      ],
+      "evolve": [
+        "wartortle"
+      ]
+    },
+    "pikachu": {
+      "id": 25,
+      "stats": [
+        35,
+        55,
+        40,
+        50,
+        50,
+        90
+      ],
+      "types": [
+        "electric"
+      ],
+      "abilities": [
+        "static",
+        "lightning-rod"
+      ],
+      "moves": [
+        "thunder-shock",
+        "quick-attack",
+        "thunder-wave",
+        "spark",
+        "thunderbolt",
+        "thunder"
+      ],
+      "evolve": [
+        "raichu"
+      ]
+    },
+    "eevee": {
+      "id": 133,
+      "stats": [
+        55,
+        55,
+        50,
+        45,
+        65,
+        55
+      ],
+      "types": [
+        "normal"
+      ],
+      "abilities": [
+        "run-away",
+        "adaptability",
+        "anticipation"
+      ],
+      "moves": [
+        "tackle",
+        "quick-attack",
+        "bite",
+        "swift",
+        "baby-doll-eyes"
+      ],
+      "evolve": [
+        "vaporeon",
+        "jolteon",
+        "flareon",
+        "espeon",
+        "umbreon",
+        "leafeon",
+        "glaceon",
+        "sylveon"
+      ]
+    },
+    "larvitar": {
+      "id": 246,
+      "stats": [
+        50,
+        64,
+        50,
+        45,
+        50,
+        41
+      ],
+      "types": [
+        "rock",
+        "ground"
+      ],
+      "abilities": [
+        "guts",
+        "sand-veil"
+      ],
+      "moves": [
+        "tackle",
+        "leer",
+        "rock-throw",
+        "bite",
+        "chip-away",
+        "rock-slide"
+      ],
+      "evolve": [
+        "pupitar"
+      ]
+    },
+    "treecko": {
+      "id": 252,
+      "stats": [
+        40,
+        45,
+        35,
+        65,
+        55,
+        70
+      ],
+      "types": [
+        "grass"
+      ],
+      "abilities": [
+        "overgrow",
+        "unburden"
+      ],
+      "moves": [
+        "pound",
+        "leer",
+        "absorb",
+        "quick-attack",
+        "mega-drain",
+        "leaf-blade"
+      ],
+      "evolve": [
+        "grovyle"
+      ]
+    },
+    "ralts": {
+      "id": 280,
+      "stats": [
+        28,
+        25,
+        25,
+        45,
+        35,
+        40
+      ],
+      "types": [
+        "psychic",
+        "fairy"
+      ],
+      "abilities": [
+        "synchronize",
+        "trace",
+        "telepathy"
+      ],
+      "moves": [
+        "growl",
+        "disarming-voice",
+        "confusion",
+        "double-team",
+        "draining-kiss"
+      ],
+      "evolve": [
+        "kirlia"
+      ]
+    },
+    "gible": {
+      "id": 443,
+      "stats": [
+        58,
+        70,
+        45,
+        40,
+        45,
+        42
+      ],
+      "types": [
+        "dragon",
+        "ground"
+      ],
+      "abilities": [
+        "sand-veil",
+        "rough-skin"
+      ],
+      "moves": [
+        "tackle",
+        "sand-attack",
+        "dragon-breath",
+        "bulldoze",
+        "bite",
+        "dragon-claw"
+      ],
+      "evolve": [
+        "gabite"
+      ]
+    },
+    "shinx": {
+      "id": 403,
+      "stats": [
+        45,
+        65,
+        34,
+        40,
+        34,
+        45
+      ],
+      "types": [
+        "electric"
+      ],
+      "abilities": [
+        "rivalry",
+        "intimidate",
+        "guts"
+      ],
+      "moves": [
+        "tackle",
+        "leer",
+        "thunder-shock",
+        "bite",
+        "spark",
+        "thunder-fang"
+      ],
+      "evolve": [
+        "luxio"
+      ]
+    },
+    "axew": {
+      "id": 610,
+      "stats": [
+        46,
+        87,
+        60,
+        30,
+        40,
+        57
+      ],
+      "types": [
+        "dragon"
+      ],
+      "abilities": [
+        "rivalry",
+        "mold-breaker",
+        "unnerve"
+      ],
+      "moves": [
+        "scratch",
+        "leer",
+        "assurance",
+        "dragon-claw",
+        "dragon-rage",
+        "slash"
+      ],
+      "evolve": [
+        "fraxure"
+      ]
+    },
+    "charizard": {
+      "id": 6,
+      "stats": [
+        78,
+        84,
+        78,
+        109,
+        85,
+        100
+      ],
+      "types": [
+        "fire",
+        "flying"
+      ],
+      "abilities": [
+        "blaze",
+        "solar-power"
+      ],
+      "moves": [
+        "flamethrower",
+        "air-slash",
+        "dragon-claw",
+        "fire-blast",
+        "slash"
+      ],
+      "mega": [
+        "charizard-mega-x",
+        "charizard-mega-y"
+      ]
+    },
+    "lucario": {
+      "id": 448,
+      "stats": [
+        70,
+        110,
+        70,
+        115,
+        70,
+        90
+      ],
+      "types": [
+        "fighting",
+        "steel"
+      ],
+      "abilities": [
+        "steadfast",
+        "inner-focus",
+        "justified"
+      ],
+      "moves": [
+        "quick-attack",
+        "force-palm",
+        "aura-sphere",
+        "close-combat",
+        "metal-claw"
+      ],
+      "mega": [
+        "lucario-mega"
+      ]
+    },
+    "gengar": {
+      "id": 94,
+      "stats": [
+        60,
+        65,
+        60,
+        130,
+        75,
+        110
+      ],
+      "types": [
+        "ghost",
+        "poison"
+      ],
+      "abilities": [
+        "cursed-body"
+      ],
+      "moves": [
+        "lick",
+        "shadow-ball",
+        "hypnosis",
+        "sludge-bomb",
+        "dream-eater"
+      ],
+      "mega": [
+        "gengar-mega"
+      ]
+    },
+    "mewtwo": {
+      "id": 150,
+      "stats": [
+        106,
+        110,
+        90,
+        154,
+        90,
+        130
+      ],
+      "types": [
+        "psychic"
+      ],
+      "abilities": [
+        "pressure",
+        "unnerve"
+      ],
+      "moves": [
+        "psychic",
+        "confusion",
+        "recover",
+        "psystrike",
+        "shadow-ball"
+      ],
+      "mega": [
+        "mewtwo-mega-x",
+        "mewtwo-mega-y"
+      ],
+      "legendary": true
+    },
+    "pidgey": {
+      "id": 16,
+      "stats": [
+        40,
+        45,
+        40,
+        35,
+        35,
+        56
+      ],
+      "types": [
+        "normal",
+        "flying"
+      ],
+      "abilities": [
+        "keen-eye",
+        "tangled-feet",
+        "big-pecks"
+      ],
+      "moves": [
+        "tackle",
+        "sand-attack",
+        "gust",
+        "quick-attack"
+      ],
+      "evolve": [
+        "pidgeotto"
+      ]
+    },
+    "sentret": {
+      "id": 161,
+      "stats": [
+        35,
+        46,
+        34,
+        35,
+        45,
+        20
+      ],
+      "types": [
+        "normal"
+      ],
+      "abilities": [
+        "run-away",
+        "keen-eye",
+        "frisk"
+      ],
+      "moves": [
+        "scratch",
+        "defense-curl",
+        "quick-attack",
+        "fury-swipes"
+      ],
+      "evolve": [
+        "furret"
+      ]
+    },
+    "bidoof": {
+      "id": 399,
+      "stats": [
+        59,
+        45,
+        40,
+        35,
+        40,
+        31
+      ],
+      "types": [
+        "normal"
+      ],
+      "abilities": [
+        "simple",
+        "unaware",
+        "moody"
+      ],
+      "moves": [
+        "tackle",
+        "growl",
+        "headbutt",
+        "water-gun"
+      ],
+      "evolve": [
+        "bibarel"
+      ]
+    },
+    "bellsprout": {
+      "id": 69,
+      "stats": [
+        50,
+        75,
+        35,
+        70,
+        30,
+        40
+      ],
+      "types": [
+        "grass",
+        "poison"
+      ],
+      "abilities": [
+        "chlorophyll",
+        "gluttony"
+      ],
+      "moves": [
+        "vine-whip",
+        "growth",
+        "wrap",
+        "sleep-powder",
+        "acid"
+      ],
+      "evolve": [
+        "weepinbell"
+      ]
+    },
+    "caterpie": {
+      "id": 10,
+      "stats": [
+        45,
+        30,
+        35,
+        20,
+        20,
+        45
+      ],
+      "types": [
+        "bug"
+      ],
+      "abilities": [
+        "shield-dust",
+        "run-away"
+      ],
+      "moves": [
+        "tackle",
+        "string-shot"
+      ],
+      "evolve": [
+        "metapod"
+      ]
+    }
+  },
+  "OFFLINE_MOVES": {
+    "tackle": [
+      40,
+      100,
+      "physical"
+    ],
+    "scratch": [
+      40,
+      100,
+      "physical"
+    ],
+    "pound": [
+      40,
+      100,
+      "physical"
+    ],
+    "growl": [
+      null,
+      100,
+      "status"
+    ],
+    "leer": [
+      null,
+      100,
+      "status"
+    ],
+    "bite": [
+      60,
+      100,
+      "physical"
+    ],
+    "ember": [
+      40,
+      100,
+      "special",
+      "burn",
+      10
+    ],
+    "flamethrower": [
+      90,
+      100,
+      "special",
+      "burn",
+      10
+    ],
+    "fireblast": [
+      110,
+      85,
+      "special",
+      "burn",
+      10
+    ],
+    "water-gun": [
+      40,
+      100,
+      "special"
+    ],
+    "vine-whip": [
+      45,
+      100,
+      "physical"
+    ],
+    "dragon-claw": [
+      80,
+      100,
+      "physical"
+    ],
+    "dragon-breath": [
+      60,
+      100,
+      "special",
+      "paralysis",
+      30
+    ],
+    "rock-throw": [
+      50,
+      90,
+      "physical"
+    ],
+    "rock-slide": [
+      75,
+      90,
+      "physical"
+    ],
+    "thunder-shock": [
+      40,
+      100,
+      "special",
+      "paralysis",
+      10
+    ],
+    "spark": [
+      65,
+      100,
+      "physical",
+      "paralysis",
+      30
+    ],
+    "thunderbolt": [
+      90,
+      100,
+      "special",
+      "paralysis",
+      10
+    ],
+    "thunder": [
+      110,
+      70,
+      "special",
+      "paralysis",
+      30
+    ],
+    "quick-attack": [
+      40,
+      100,
+      "physical"
+    ],
+    "confusion": [
+      50,
+      100,
+      "special",
+      "confusion",
+      10
+    ],
+    "psychic": [
+      90,
+      100,
+      "special"
+    ],
+    "shadow-ball": [
+      80,
+      100,
+      "special"
+    ],
+    "solar-beam": [
+      120,
+      100,
+      "special"
+    ],
+    "razor-leaf": [
+      55,
+      95,
+      "physical"
+    ],
+    "leaf-blade": [
+      90,
+      100,
+      "physical"
+    ],
+    "absorb": [
+      20,
+      100,
+      "special"
+    ],
+    "mega-drain": [
+      40,
+      100,
+      "special"
+    ],
+    "aura-sphere": [
+      80,
+      null,
+      "special"
+    ],
+    "air-slash": [
+      75,
+      95,
+      "special"
+    ],
+    "close-combat": [
+      120,
+      100,
+      "physical"
+    ],
+    "metal-claw": [
+      50,
+      95,
+      "physical"
+    ],
+    "sludge-bomb": [
+      90,
+      100,
+      "special"
+    ],
+    "force-palm": [
+      60,
+      100,
+      "physical",
+      "paralysis",
+      30
+    ],
+    "hypnosis": [
+      null,
+      60,
+      "status",
+      "sleep",
+      100
+    ],
+    "sleep-powder": [
+      null,
+      75,
+      "status",
+      "sleep",
+      100
+    ],
+    "thunder-wave": [
+      null,
+      90,
+      "status",
+      "paralysis",
+      100
+    ],
+    "recover": [
+      null,
+      null,
+      "status"
+    ],
+    "leech-seed": [
+      null,
+      90,
+      "status"
+    ],
+    "defense-curl": [
+      null,
+      null,
+      "status"
+    ],
+    "growth": [
+      null,
+      null,
+      "status"
+    ],
+    "double-team": [
+      null,
+      null,
+      "status"
+    ],
+    "sand-attack": [
+      null,
+      100,
+      "status"
+    ],
+    "tail-whip": [
+      null,
+      100,
+      "status"
+    ],
+    "headbutt": [
+      70,
+      100,
+      "physical"
+    ],
+    "gust": [
+      40,
+      100,
+      "special"
+    ],
+    "disarming-voice": [
+      40,
+      null,
+      "special"
+    ],
+    "draining-kiss": [
+      50,
+      100,
+      "special"
+    ],
+    "fury-swipes": [
+      18,
+      80,
+      "physical"
+    ],
+    "wrap": [
+      15,
+      90,
+      "physical"
+    ],
+    "acid": [
+      40,
+      100,
+      "special"
+    ],
+    "bulldoze": [
+      60,
+      100,
+      "physical"
+    ],
+    "sandstorm": [
+      null,
+      null,
+      "status"
+    ],
+    "slash": [
+      70,
+      100,
+      "physical"
+    ]
+  },
+  "MOVE_TYPES": {
+    "tackle": "normal",
+    "scratch": "normal",
+    "pound": "normal",
+    "growl": "normal",
+    "leer": "normal",
+    "bite": "dark",
+    "ember": "fire",
+    "flamethrower": "fire",
+    "fire-blast": "fire",
+    "water-gun": "water",
+    "vine-whip": "grass",
+    "dragon-claw": "dragon",
+    "dragon-breath": "dragon",
+    "rock-throw": "rock",
+    "rock-slide": "rock",
+    "thunder-shock": "electric",
+    "spark": "electric",
+    "thunderbolt": "electric",
+    "thunder": "electric",
+    "quick-attack": "normal",
+    "confusion": "psychic",
+    "psychic": "psychic",
+    "shadow-ball": "ghost",
+    "solar-beam": "grass",
+    "razor-leaf": "grass",
+    "leaf-blade": "grass",
+    "absorb": "grass",
+    "mega-drain": "grass",
+    "aura-sphere": "fighting",
+    "air-slash": "flying",
+    "close-combat": "fighting",
+    "metal-claw": "steel",
+    "sludge-bomb": "poison",
+    "force-palm": "fighting",
+    "hypnosis": "psychic",
+    "sleep-powder": "grass",
+    "thunder-wave": "electric",
+    "recover": "normal",
+    "leech-seed": "grass",
+    "defense-curl": "normal",
+    "growth": "normal",
+    "double-team": "normal",
+    "sand-attack": "ground",
+    "tail-whip": "normal",
+    "headbutt": "normal",
+    "gust": "flying",
+    "disarming-voice": "fairy",
+    "draining-kiss": "fairy",
+    "fury-swipes": "normal",
+    "wrap": "normal",
+    "acid": "poison",
+    "bulldoze": "ground",
+    "sandstorm": "rock",
+    "slash": "normal"
+  }
+}

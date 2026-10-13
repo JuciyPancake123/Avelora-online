@@ -1,0 +1,4 @@
+If Mac refuses double-click launcher, open Terminal and run:
+  cd <drag your extracted Avelora_LAN_Mac folder here>
+  python3 server.py
+Then open http://localhost:8765 on the host Mac.

@@ -1,0 +1,4 @@
+Avelora Combat Manager — Easy Online Edition
+Update: Player Move & Team DM Approvals
+Features: player ownership, move and roster requests, DM approval/denial with history, cancellation, live battles, SQLite saves
+Not yet deployed; use START_HERE.md.
