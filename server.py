@@ -34,7 +34,7 @@ ROOT=Path(__file__).resolve().parent
 ONLINE=os.environ.get('AVELORA_ONLINE','0')=='1'
 DM_PASSWORD=os.environ.get('AVELORA_DM_PASSWORD','')
 if ONLINE and len(DM_PASSWORD)<16:
-    raise RuntimeError('Set AVALORA_DM_PASSWORD to a unique password with at least 16 characters before deployment.')
+    raise RuntimeError('Missing or too-short AVELORA_DM_PASSWORD. In Railway > Avelora service > Variables, set AVELORA_DM_PASSWORD to a NEW private password of at least 16 characters, then deploy the changes. Do not put the password in GitHub.')
 DATA=Path(os.environ.get('AVELORA_DATA_DIR',str(ROOT/'data'))); DATA.mkdir(parents=True, exist_ok=True)
 LOGIN_LOCK=threading.RLock()
 FAILS=defaultdict(deque)

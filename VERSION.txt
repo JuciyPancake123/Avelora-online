@@ -1,4 +1,6 @@
-Avelora Combat Manager — Easy Online Edition
-Update: Player Move & Team DM Approvals
-Features: player ownership, move and roster requests, DM approval/denial with history, cancellation, live battles, SQLite saves
-Not yet deployed; use START_HERE.md.
+Avelora Combat Manager — Online Deployment Fix
+2026-10-13
+- Corrected typo in startup password error: AVELORA_DM_PASSWORD (not AVALORA_DM_PASSWORD).
+- Corrected Docker environment defaults: AVELORA_ONLINE=1, AVELORA_DATA_DIR=/data, PORT=8080.
+- Simplified Railway setup and password-rotation instructions.
+- Game and multiplayer rules otherwise unchanged.
