@@ -59,6 +59,8 @@ DB=DATA/'avelora.sqlite3'
 ALLOWED_STATUS={'none','burn','poison','bad-poison','sleep','freeze','paralysis','confusion'}
 TYPES={'normal','fire','water','electric','grass','ice','fighting','poison','ground','flying','psychic','bug','rock','ghost','dragon','dark','steel','fairy'}
 STAGES={'attack','defense','special-attack','special-defense','speed','accuracy','evasion'}
+MAX_PLAYERS=10
+MAX_PENDING_PLAYERS=20
 WEATHERS={'none','sun','rain','sand','snow'}
 TERRAINS={'none','electric','grassy','misty','psychic'}
 AREAS={'earthquake':'all-other-pokemon','surf':'all-other-pokemon','discharge':'all-other-pokemon','bulldoze':'all-other-pokemon','explosion':'all-other-pokemon','rock-slide':'all-opponents','razor-leaf':'all-opponents','heat-wave':'all-opponents','swift':'all-opponents'}
@@ -549,7 +551,7 @@ def perform(who,action,d):
     if action=='approve_player':
         p=s['players'].get(d.get('id'))
         if not p or p['state']!='pending':raise ValueError('Pending Trainer not found')
-        if sum(x['state']=='approved' for x in s['players'].values())>=3:raise ValueError('Maximum of three Trainers reached')
+        if sum(x['state']=='approved' for x in s['players'].values())>=MAX_PLAYERS:raise ValueError(f'Maximum of {MAX_PLAYERS} Trainers reached')
         p['state']='approved';return {'message':'Trainer approved'}
     if action=='remove_player':
         pid=d.get('id')
@@ -805,8 +807,8 @@ class Handler(BaseHTTPRequestHandler):
                         raise PermissionError('Incorrect room code')
                     nick=clean(d.get('nickname'),28)
                     if len(nick)<2:raise ValueError('Trainer name must be at least two characters')
-                    if sum(p['state']=='approved' for p in app.state['players'].values())>=3:raise ValueError('The campaign already has three approved players')
-                    if sum(p['state']=='pending' for p in app.state['players'].values())>=8:raise ValueError('Too many pending requests; ask the DM to clear them')
+                    if sum(p['state']=='approved' for p in app.state['players'].values())>=MAX_PLAYERS:raise ValueError(f'The campaign already has {MAX_PLAYERS} approved players')
+                    if sum(p['state']=='pending' for p in app.state['players'].values())>=MAX_PENDING_PLAYERS:raise ValueError('Too many pending requests; ask the DM to clear them')
                     pid=eid();app.state['players'][pid]={'id':pid,'nickname':nick,'state':'pending','joined':now()}
                     token=app.create_session('player',pid);app.changed()
                     return self.json_response({'ok':True,'pending':True},extra={'Set-Cookie':f'{COOKIE_NAME}={token}{COOKIE_FLAGS}; Max-Age=15552000'})

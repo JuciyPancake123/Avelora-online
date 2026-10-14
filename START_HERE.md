@@ -36,7 +36,7 @@
 ## What the DM and players do
 
 - DM: log in with the private DM password, manage Pokémon, approve players, control battles, award EXP and override outcomes.
-- DM: open **Overview → Copy player invite link** and share it with your three players. Never share your DM password.
+- DM: open **Overview → Copy player invite link** and share it with up to ten players. Never share your DM password.
 - Players: follow the link, enter a Trainer nickname, and wait for DM approval. They see only their Pokémon and limited opponent information.
 - Players can enter physical dice results, choose battle moves, and request new moves or full party/storage changes; the DM approves or denies team/move changes.
 - Saves go to SQLite under `/data`. After each session, use **DM Tools → Export full campaign JSON** to keep an additional backup on your Mac.
@@ -63,3 +63,11 @@ python3 -m unittest discover -s tests -v
 The tests start a local server in simulated online mode, test DM login, player approvals, and battle/security flows. They **cannot guarantee Railway deployment** until you deploy and verify the real website.
 
 For advanced notes on game mechanics and known limitations, see `GAME_FEATURES.md`.
+
+## Ten-player update
+
+- The campaign now supports **up to 10 approved Trainers**, each with their own login session and DM-approved move/team changes.
+- Up to **20 pending join requests** may wait for DM approval. Once 10 Trainers are approved, new joins are rejected until an approved Trainer is removed.
+- The six-Pokémon party limit is **per Trainer**, not a campaign-wide limit. Battle size remains **20 vs. 20**.
+- **Existing saved campaigns remain compatible.** No database reset or new Railway volume is required.
+- To upgrade an existing GitHub/Railway installation, replace `server.py` at the repository root and `static/app.js` inside the `static` folder. Commit both, then verify Railway deploys the new commit. Do **not** delete or detach `/data`.

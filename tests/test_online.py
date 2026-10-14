@@ -62,7 +62,7 @@ class CloudTests(unittest.TestCase):
         status,dm,_=self.req('/api/session',cookie=dm_cookie)
         self.assertEqual(dm['role'],'dm');code=dm['room_code']
         players=[]
-        for i in range(3):
+        for i in range(10):
             status,body,cookie=self.req('/api/join',{'code':code,'nickname':f'Player {i+1}'})
             self.assertEqual(status,200)
             pc=cookie.split(';')[0];players.append(pc)
@@ -84,6 +84,8 @@ class CloudTests(unittest.TestCase):
             self.assertEqual(status,200,r);ids.append(r['pokemon_id'])
         status,view,_=self.req('/api/session',cookie=players[0]);self.assertEqual(len(view['pokemon']),1)
         status,view2,_=self.req('/api/session',cookie=players[1]);self.assertEqual(len(view2['pokemon']),0)
+        status,view10,_=self.req('/api/session',cookie=players[9]);self.assertEqual(view10['role'],'player');self.assertEqual(len(view10['pokemon']),0)
+        status,no10,_=self.req('/api/action',{'action':'player_nickname','payload':{'id':ids[0],'nickname':'Not Mine'}},players[9]);self.assertEqual(status,403)
         status,no,_=self.req('/api/action',{'action':'player_nickname','payload':{'id':ids[0],'nickname':'Hacked'}},players[1]);self.assertEqual(status,403)
         status,r,_=self.req('/api/action',{'action':'start_battle','payload':{'allies':[ids[0]],'enemies':[ids[1]]}},dm_cookie)
         self.assertEqual(status,200,r)
@@ -98,7 +100,7 @@ class CloudTests(unittest.TestCase):
         import sqlite3
         db=sqlite3.connect(Path(self.temp.name)/'avelora.sqlite3')
         row=db.execute('SELECT data FROM saved WHERE id=1').fetchone();db.close()
-        saved=json.loads(row[0]);self.assertEqual(len(saved['players']),3);self.assertEqual(len(saved['pokemon']),2)
+        saved=json.loads(row[0]);self.assertEqual(len(saved['players']),10);self.assertEqual(len(saved['pokemon']),2)
         # Approval queue: players must not directly edit moves or party membership.
         extra={'species':'treecko','level':5,'stats':[40,45,35,65,55,70],
                'types':['grass'],'dex_id':252,'owner':dm['players'][0]['id'],'ability':'overgrow',

@@ -1,6 +1,6 @@
-Avelora Combat Manager — Online Deployment Fix
+Avelora Combat Manager — Online 10-Player Update
 2026-10-13
-- Corrected typo in startup password error: AVELORA_DM_PASSWORD (not AVALORA_DM_PASSWORD).
-- Corrected Docker environment defaults: AVELORA_ONLINE=1, AVELORA_DATA_DIR=/data, PORT=8080.
-- Simplified Railway setup and password-rotation instructions.
-- Game and multiplayer rules otherwise unchanged.
+- Increased approved Trainer limit from 3 to 10.
+- Increased pending join queue from 8 to 20.
+- Updated DM dashboard and welcome screen to show 10-player capacity.
+- Existing saved campaigns and combat rules unchanged.
