@@ -1,4 +1,3 @@
-Avelora Online — Search, Rests & Level Creation Update
-Based on 10-player edition.
-New: fuzzy Pokédex autocomplete, creation-level legal move preview, DM short rest with missing-HP and level-based dice, long rest with extra healing dice (default 2×), one/Trainer/everyone rest scope, DM rest history.
-See UPDATE_GUIDE.md for deployment and the confirmed Long Rest rule.
+Avelora Online — Battle QA Improvements · 2026-10-13
+Ten-player online deployment, level-based Pokémon creation, full-dex search, short/long rests, and combat quality-of-life enhancements.
+Update server.py, static/app.js and static/style.css on the current GitHub/Railway service.

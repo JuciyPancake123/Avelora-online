@@ -78,6 +78,17 @@ def toint(v,lo,hi):
     if not lo<=n<=hi:raise ValueError(f'Expected a whole number from {lo} to {hi}')
     return n
 
+def roll_total(value, signed=False):
+    """Accept tabletop roll totals without game-rule caps; bound numeric size for safe transport."""
+    if isinstance(value, bool):raise ValueError('Roll must be a whole number')
+    try:
+        raw=str(value).strip()
+        if not re.fullmatch(r'-?[0-9]{1,15}',raw):raise ValueError()
+        number=int(raw)
+    except (TypeError, ValueError):raise ValueError('Roll must be a whole number (up to 15 digits)')
+    if not signed and number<0:raise ValueError('Roll cannot be negative')
+    return number
+
 def new_state():return copy.deepcopy(DEFAULT_GAME)
 
 class App:
@@ -142,9 +153,18 @@ def sanitize_battle(b,who):
     if not b:return None
     if who['role']=='dm':return {k:copy.deepcopy(v) for k,v in b.items() if k!='_history'}
     pid=who['id']; out={k:copy.deepcopy(v) for k,v in b.items() if k not in ('units','_history')}
-    # All enemy and other Trainer information stays deliberately limited.
+    # Players cannot inspect un-deployed enemy reserves through JSON or the UI.
+    # The DM retains the complete roster, including reserves.
+    visible_ids={u['id'] for u in b['units'] if u.get('team')!='enemy' or u.get('active') or u.get('trainer_id')==pid}
     out['units']=[]
+    out['log']=[{k:v for k,v in entry.items() if k!='private_units'} for entry in b.get('log',[])
+                if not entry.get('private_units') or set(entry['private_units']).issubset(visible_ids)]
+    if b.get('order'):
+        current_id=b['order'][b.get('turn_index',0)]
+        out['order']=[uid for uid in b['order'] if uid in visible_ids]
+        out['turn_index']=out['order'].index(current_id) if current_id in out['order'] else 0
     for u in b['units']:
+        if u['id'] not in visible_ids:continue
         if u.get('trainer_id')==pid:
             x=copy.deepcopy(u);x['calculated']=computed(u)
         else:
@@ -230,8 +250,10 @@ def active_actor(b):
     if b['turn_index']<0 or b['turn_index']>=len(b['order']):raise ValueError('No active turn')
     return unit_by_id(b,b['order'][b['turn_index']])
 
-def append_log(b,message):
-    b['log'].append({'when':now(),'round':b['round'],'message':message})
+def append_log(b,message,private_units=None):
+    entry={'when':now(),'round':b['round'],'message':message}
+    if private_units:entry['private_units']=private_units
+    b['log'].append(entry)
     b['log']=b['log'][-150:]
 
 def checkpoint():
@@ -335,6 +357,14 @@ def advance(b):
     for i,uid in enumerate(b['order']):
         if eligible(unit_by_id(b,uid)):
             b['turn_index']=i;return
+    # An exhausted side may still have healthy reserve Pokémon. Let its Trainer
+    # send out a replacement instead of ending the encounter prematurely.
+    waiting=[u for u in b['units'] if u['active'] and u['current_hp']<=0 and any(
+        not r['active'] and r['current_hp']>0 and r['team']==u['team'] and r['trainer_id']==u['trainer_id'] for r in b['units'])]
+    if waiting:
+        b['turn_index']=b['order'].index(waiting[0]['id'])
+        append_log(b,'A Pokémon has fainted. Send out a healthy reserve to continue.')
+        return
     b['phase']='finished';append_log(b,'Battle finished: no Pokémon can act.')
 
 def act_attack(who,b,d):
@@ -362,7 +392,7 @@ def act_attack(who,b,d):
         else:hit=auto or roll==20 or (roll!=1 and roll+hit_bonus(a,m)>=defense_ac(target,m.get('category')))
         if m['name'] in ('swift','aura-sphere','magical-leaf','disarming-voice'):hit=True
         count=dice['count']*(2 if roll==20 else 1) if dice else 0
-        dmg_total=toint(td.get('dice_sum',0),count,count*dice['sides']) if dice and hit else 0
+        dmg_total=roll_total(td.get('dice_sum',0)) if dice and hit else 0
         outcomes.append((target,roll,hit,dmg_total))
     checkpoint()
     if wants_reroll:
@@ -544,8 +574,22 @@ def perform(who,action,d):
         if not b or b['phase']!='initiative':raise ValueError('Not preparing initiative')
         u=unit_by_id(b,d.get('unit_id'))
         if u['trainer_id']!=who['id']:raise PermissionError('Not your Pokémon')
-        u['initiative_roll']=toint(d.get('roll'),1,20);u['initiative']=u['initiative_roll']+computed(u)['speed_mod']
+        u['initiative_roll']=roll_total(d.get('roll'));u['initiative']=u['initiative_roll']+computed(u)['speed_mod']
         return {'message':'Initiative recorded'}
+    if action=='replace_fainted':
+        if role!='dm':require_player(who)
+        if not b or b['phase']!='battle':raise ValueError('No active battle')
+        fainted=unit_by_id(b,d.get('fainted_id'))
+        reserve=unit_by_id(b,d.get('reserve_id'))
+        if role!='dm' and fainted.get('trainer_id')!=who['id']:raise PermissionError('This is not your Trainer’s Pokémon')
+        if not fainted['active'] or fainted['current_hp']>0:raise ValueError('Choose a fainted active Pokémon')
+        if reserve['trainer_id']!=fainted['trainer_id'] or reserve['team']!=fainted['team'] or reserve['active'] or reserve['current_hp']<=0:
+            raise ValueError('Choose a healthy reserve belonging to the same Trainer')
+        checkpoint();fainted['active']=False;reserve['active']=True
+        reserve['acted']=bool(fainted.get('acted') or reserve.get('acted'))
+        append_log(b,f'{display(fainted["species"])} was withdrawn. {display(reserve["species"])} entered the battle!')
+        advance(b)
+        return {'message':'Replacement Pokémon entered battle'}
     if action in ('attack','pass','switch','transform'):
         if role!='dm':require_player(who)
         if not b or b['phase']!='battle':raise ValueError('No active battle')
@@ -670,6 +714,17 @@ def perform(who,action,d):
         p['moves']=[{**legal[m['name']],'remaining_pp':m['remaining_pp']} for m in oldmoves][:4] or base['moves']
         p['current_hp']=clamp(oldhp+computed(p)['max_hp']-oldmax,0,computed(p)['max_hp'])
         return {'message':'Pokémon evolved; existing Bond, EXP, shiny, and eligible moves preserved'}
+    if action=='bulk_delete_pokemon':
+        ids=d.get('ids')
+        if not isinstance(ids,list) or not ids or len(ids)>1000 or any(not isinstance(pid,str) for pid in ids):
+            raise ValueError('Select 1–1000 Pokémon to delete')
+        if len(set(ids))!=len(ids) or any(pid not in s['pokemon'] for pid in ids):
+            raise ValueError('One or more selected Pokémon were not found')
+        if has_active_battle() and any(u['pokemon_id'] in ids for u in b['units']):
+            raise ValueError('End the battle before deleting one of its Pokémon')
+        for pid in ids:del s['pokemon'][pid]
+        s['requests']=[r for r in s['requests'] if r.get('pokemon_id') not in ids and not (r.get('kind')=='team' and any(pid in ids for pid in r.get('party_ids',[])))]
+        return {'message':f'Deleted {len(ids)} Pokémon'}
     if action=='delete_pokemon':
         pkid=d.get('id')
         if pkid not in s['pokemon']:raise ValueError('Pokémon not found')
@@ -710,7 +765,7 @@ def perform(who,action,d):
         s['battle']=new_battle(d);return {'message':'Battle setup created'}
     if action=='dm_initiative':
         if not b or b['phase']!='initiative':raise ValueError('Not preparing initiative')
-        u=unit_by_id(b,d.get('unit_id'));u['initiative_roll']=toint(d['roll'],1,20);u['initiative']=u['initiative_roll']+computed(u)['speed_mod']
+        u=unit_by_id(b,d.get('unit_id'));u['initiative_roll']=roll_total(d['roll']);u['initiative']=u['initiative_roll']+computed(u)['speed_mod']
         return {'message':'Initiative saved'}
     if action=='begin_battle':
         if not b or b['phase']!='initiative':raise ValueError('Not in initiative setup')
@@ -737,13 +792,13 @@ def perform(who,action,d):
             if duration:u['timed_mods'][key]=duration
             else:u['timed_mods'].pop(key,None)
         elif key=='initiative':
-            u['initiative']=toint(val,-20,100)
+            u['initiative']=roll_total(val, signed=True)
             if b['phase']=='battle':
                 curr=active_actor(b)['id'];b['order']=[x['id'] for x in sorted(b['units'],key=lambda x:-x['initiative'])];b['turn_index']=b['order'].index(curr)
         elif key=='active':
             active=bool(val=='true');u['active']=active;u['acted']=True if active else u['acted']
         else:raise ValueError('Unknown DM override')
-        update_mon_hp(u);append_log(b,f'DM adjusted {display(u["species"])}: {key} → {val}.')
+        update_mon_hp(u);append_log(b,f'DM adjusted {display(u["species"])}: {key} → {val}.', [u['id']] if u['team']=='enemy' and not u['active'] else None)
         return {'message':'DM override applied'}
     if action=='dm_weather':
         if not b:raise ValueError('No battle')
