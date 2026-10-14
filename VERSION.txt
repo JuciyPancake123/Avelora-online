@@ -1,6 +1,4 @@
-Avelora Combat Manager — Online 10-Player Update
-2026-10-13
-- Increased approved Trainer limit from 3 to 10.
-- Increased pending join queue from 8 to 20.
-- Updated DM dashboard and welcome screen to show 10-player capacity.
-- Existing saved campaigns and combat rules unchanged.
+Avelora Online — Search, Rests & Level Creation Update
+Based on 10-player edition.
+New: fuzzy Pokédex autocomplete, creation-level legal move preview, DM short rest with missing-HP and level-based dice, long rest with extra healing dice (default 2×), one/Trainer/everyone rest scope, DM rest history.
+See UPDATE_GUIDE.md for deployment and the confirmed Long Rest rule.

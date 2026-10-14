@@ -64,7 +64,7 @@ MAX_PENDING_PLAYERS=20
 WEATHERS={'none','sun','rain','sand','snow'}
 TERRAINS={'none','electric','grassy','misty','psychic'}
 AREAS={'earthquake':'all-other-pokemon','surf':'all-other-pokemon','discharge':'all-other-pokemon','bulldoze':'all-other-pokemon','explosion':'all-other-pokemon','rock-slide':'all-opponents','razor-leaf':'all-opponents','heat-wave':'all-opponents','swift':'all-opponents'}
-DEFAULT_GAME={'room_code':''.join(secrets.choice('ABCDEFGHJKLMNPQRSTUVWXYZ23456789') for _ in range(6)),'title':'Echoes of Avelora','players':{},'pokemon':{},'battle':None,'requests':[], 'change_history':[], 'version':0, 'created':datetime.datetime.now(datetime.timezone.utc).isoformat()}
+DEFAULT_GAME={'room_code':''.join(secrets.choice('ABCDEFGHJKLMNPQRSTUVWXYZ23456789') for _ in range(6)),'title':'Echoes of Avelora','players':{},'pokemon':{},'battle':None,'requests':[], 'change_history':[], 'rest_history':[], 'version':0, 'created':datetime.datetime.now(datetime.timezone.utc).isoformat()}
 
 def eid():return uuid.uuid4().hex[:14]
 def now():return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec='seconds')
@@ -163,7 +163,7 @@ def projection(who):
     if not who:return {'signed_in':False,'version':s['version'],'room_ready':True,'host_login':False, 'online':ONLINE}
     if who['role']=='dm':
         return {'signed_in':True,'role':'dm','online':ONLINE,'room_code':s['room_code'],'title':s['title'],'players':list(s['players'].values()),
-                'pokemon':[pokemon_view(p) for p in s['pokemon'].values()], 'requests':s['requests'], 'change_history':s.get('change_history',[]), 'battle':sanitize_battle(s['battle'],who), 'version':s['version']}
+                'pokemon':[pokemon_view(p) for p in s['pokemon'].values()], 'requests':s['requests'], 'change_history':s.get('change_history',[]), 'rest_history':s.get('rest_history',[])[-30:], 'battle':sanitize_battle(s['battle'],who), 'version':s['version']}
     player=s['players'][who['id']]
     if player['state']!='approved':return {'signed_in':True,'role':'player','player':player,'pending':True,'online':ONLINE,'version':s['version']}
     return {'signed_in':True,'role':'player','player':player,'online':ONLINE,'title':s['title'],'room_code':s['room_code'],
@@ -465,6 +465,36 @@ def record_review(req,approve,reason=''):
 def has_team_request(pid):
     return any(r['player_id']==pid and r.get('kind','storage') in ('team','storage') for r in app.state['requests'])
 
+def rest_roll(mon, kind, dice_multiplier=1):
+    """Missing HP determines dice count; level determines die size.
+
+    One die per 20% of max HP missing (rounded up), so 1-5 dice.
+    Long rest rolls at least twice as many dice (DM-selectable 2–10×).
+    Zero-HP Pokémon are not revived by rest.
+    """
+    maximum=computed(mon)['max_hp']
+    current=clamp(int(mon.get('current_hp',maximum)),0,maximum)
+    missing=maximum-current
+    if current==0 or missing==0:return {'dice':'—','rolls':[],'healed':0,'missing':missing,'before':current,'after':current}
+    base_count=max(1,(5*missing+maximum-1)//maximum)
+    faces=4 if mon['level']<20 else 6 if mon['level']<40 else 8 if mon['level']<60 else 10 if mon['level']<80 else 12
+    count=base_count*(dice_multiplier if kind=='long' else 1)
+    rolls=[random.randint(1,faces) for _ in range(count)]
+    healed=min(missing,sum(rolls))
+    return {'dice':f'{count}d{faces}','rolls':rolls,'healed':healed,'missing':missing,'before':current,'after':current+healed}
+
+def rest_targets(s, scope, target_id):
+    if scope=='pokemon':
+        mon=s['pokemon'].get(target_id)
+        if mon is None:raise ValueError('Select an existing Pokémon')
+        return [mon]
+    if scope=='trainer':
+        if target_id=='dm':return [p for p in s['pokemon'].values() if p.get('owner') is None]
+        if target_id not in s['players'] or s['players'][target_id].get('state')!='approved':raise ValueError('Select an approved Trainer')
+        return [p for p in s['pokemon'].values() if p.get('owner')==target_id]
+    if scope=='everyone':return list(s['pokemon'].values())
+    raise ValueError('Invalid rest target scope')
+
 def perform(who,action,d):
     s=app.state;b=s.get('battle');role=who['role'] if who else None
     if action=='player_nickname':
@@ -560,6 +590,31 @@ def perform(who,action,d):
         del s['players'][pid];app.revoke_player(pid)
         s['requests']=[r for r in s['requests'] if r['player_id']!=pid]
         return {'message':'Trainer removed'}
+    if action=='dm_rest':
+        if has_active_battle():raise ValueError('End the current battle before resting Pokémon, so HP and PP stay synchronized')
+        kind=d.get('kind')
+        if kind not in ('short','long'):raise ValueError('Choose short or long rest')
+        scope=d.get('scope')
+        targets=rest_targets(s,scope,d.get('target_id'))
+        if not targets:raise ValueError('There are no Pokémon in this group')
+        multiplier=toint(d.get('dice_multiplier',2),2,10) if kind=='long' else 1
+        restore_pp=d.get('restore_pp') is True if kind=='long' else False
+        clear_status=d.get('clear_status') is True if kind=='long' else False
+        summary=[]
+        for mon in targets:
+            result=rest_roll(mon,kind,multiplier)
+            mon['current_hp']=result['after']
+            if result['before']>0:
+                if restore_pp:
+                    for move in mon.get('moves',[]):move['remaining_pp']=move['pp']
+                if clear_status:mon['status']='none'
+            summary.append({'pokemon_id':mon['id'],'pokemon':mon['nickname'],'level':mon['level'],**result})
+        log={'when':now(),'kind':kind,'scope':scope,'target_id':d.get('target_id'),'dice_multiplier':multiplier,'restore_pp':restore_pp,'clear_status':clear_status,'results':summary}
+        history=s.setdefault('rest_history',[])
+        history.append(log)
+        if len(history)>100:del history[:-100]
+        total=sum(x['healed'] for x in summary)
+        return {'message':f'{display(kind)} rest completed: {total} HP recovered across {len(summary)} Pokémon', 'rest':log}
     if action=='create_pokemon':
         mon=mon_card_from_input(d.get('pokemon',{}))
         s['pokemon'][mon['id']]=mon;return {'message':f'{display(mon["species"])} created'+(' (SHINY!)' if mon['shiny'] else ''),'pokemon_id':mon['id']}

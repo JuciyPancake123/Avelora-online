@@ -156,4 +156,52 @@ class CloudTests(unittest.TestCase):
         status,not_owner,_=self.req('/api/action',{'action':'request_team','payload':{'party_ids':[ids[1]]}},players[0]);self.assertEqual(status,403)
         status,too_many,_=self.req('/api/action',{'action':'request_team','payload':{'party_ids':[extra_id]*7}},players[0]);self.assertEqual(status,400)
 
+        # Rest permissions, damage-scaled level dice, per-Pokémon / Trainer / everyone.
+        status,deny,_=self.req('/api/action',{'action':'dm_rest','payload':{'kind':'short','scope':'everyone'}},players[0])
+        self.assertEqual(status,403)
+        status,view,_=self.req('/api/session',cookie=dm_cookie)
+        mon=next(p for p in view['pokemon'] if p['id']==extra_id)
+        max_hp=mon['calculated']['max_hp']
+        status,edit,_=self.req('/api/action',{'action':'edit_pokemon','payload':{'id':extra_id,'current_hp':max_hp//2}},dm_cookie)
+        self.assertEqual(status,200,edit)
+        status,rest,_=self.req('/api/action',{'action':'dm_rest','payload':{'kind':'short','scope':'pokemon','target_id':extra_id}},dm_cookie)
+        self.assertEqual(status,200,rest)
+        detail=rest['rest']['results'][0]
+        self.assertEqual(detail['missing'],max_hp-max_hp//2)
+        self.assertEqual(len(detail['rolls']),(5*detail['missing']+max_hp-1)//max_hp)
+        self.assertTrue(0<detail['healed']<=detail['missing'])
+        self.assertEqual(detail['after'],detail['before']+detail['healed'])
+        status,view,_=self.req('/api/session',cookie=dm_cookie)
+        self.assertEqual(next(p for p in view['pokemon'] if p['id']==extra_id)['current_hp'],detail['after'])
+        self.assertTrue(view['rest_history'])
+        status,pview,_=self.req('/api/session',cookie=players[0]);self.assertNotIn('rest_history',pview)
+        status,invalid,_=self.req('/api/action',{'action':'dm_rest','payload':{'kind':'long','scope':'pokemon','target_id':extra_id,'dice_multiplier':11}},dm_cookie)
+        self.assertEqual(status,400)
+        status,edit,_=self.req('/api/action',{'action':'edit_pokemon','payload':{'id':extra_id,'current_hp':1,'status':'poison'}},dm_cookie)
+        self.assertEqual(status,200,edit)
+        status,long,_=self.req('/api/action',{'action':'dm_rest','payload':{'kind':'long','scope':'trainer','target_id':dm['players'][0]['id'],'dice_multiplier':2,'restore_pp':True,'clear_status':True}},dm_cookie)
+        self.assertEqual(status,200,long)
+        self.assertEqual(len(long['rest']['results']),2)
+        status,view,_=self.req('/api/session',cookie=dm_cookie)
+        self.assertEqual(next(p for p in view['pokemon'] if p['id']==extra_id)['status'],'none')
+        status,allrest,_=self.req('/api/action',{'action':'dm_rest','payload':{'kind':'short','scope':'everyone'}},dm_cookie)
+        self.assertEqual(status,200,allrest);self.assertEqual(len(allrest['rest']['results']),3)
+        # Level 1 creations must never receive moves learned only at higher levels.
+        spec={'species':'shinx','level':1,'stats':[45,65,34,40,34,45], 'types':['electric'],'dex_id':403,'ability':'intimidate',
+              'allowed_moves':[{'name':'tackle','type':'normal','category':'physical','power':40,'accuracy':100,'pp':35,'learned_at':1},
+                               {'name':'spark','type':'electric','category':'physical','power':65,'accuracy':100,'pp':20,'learned_at':15}]}
+        status,created,_=self.req('/api/action',{'action':'create_pokemon','payload':{'pokemon':spec}},dm_cookie)
+        self.assertEqual(status,200,created)
+        status,view,_=self.req('/api/session',cookie=dm_cookie)
+        newmon=next(p for p in view['pokemon'] if p['id']==created['pokemon_id'])
+        self.assertEqual(newmon['level'],1)
+        self.assertEqual([m['name'] for m in newmon['moves']],['tackle'])
+        spec['level']=40
+        status,created,_=self.req('/api/action',{'action':'create_pokemon','payload':{'pokemon':spec}},dm_cookie)
+        self.assertEqual(status,200,created)
+        status,view,_=self.req('/api/session',cookie=dm_cookie)
+        newmon=next(p for p in view['pokemon'] if p['id']==created['pokemon_id'])
+        self.assertEqual(newmon['level'],40)
+        self.assertEqual({m['name'] for m in newmon['moves']},{'tackle','spark'})
+
 if __name__=='__main__':unittest.main()
